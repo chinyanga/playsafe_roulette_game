@@ -32,7 +32,7 @@ public class RouletteGame {
 				}
 			};
 			ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-			service.scheduleAtFixedRate(runnable, 0, 90, TimeUnit.SECONDS);
+			service.scheduleAtFixedRate(runnable, 0, 30, TimeUnit.SECONDS);
 
 			readPlayersFromFile();
 			programIntro();
