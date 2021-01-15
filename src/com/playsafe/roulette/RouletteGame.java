@@ -58,6 +58,33 @@ public class RouletteGame {
 		int betNum = randomBetNum.nextInt(36);
 		programBetNumber = betNum;
 	}
+	
+	public static void printOutput() {
+		System.out.println("Number: \t" + programBetNumber);
+		System.out.println("Player: \t\t\t Bet \t\t\tOutcome\t\t\tWinnings");
+		for (Player p : currentGamePlayers) {
+			System.out.println(p.getName() + "\t\t\t\t" + p.getBetType() + "\t\t\t" + p.getGameStatus().toUpperCase()
+					+ "\t\t\t" + p.getWinnings());
+		}
+	}
+
+	public static void gameController() {
+		if (controlCounter == 0) {
+			controlCounter = 1;
+		} else {
+			if (controlCounter == 1) {
+				System.out.println("\n------------------------------------------------------------------------");
+				System.out.println("Game session Ended here are the results. Restart to play the next round");
+				printOutput();
+				playerList = new ArrayList<>();
+				currentGamePlayers = new ArrayList<>();
+				controlCounter++;
+				isGameOn = false;
+			}
+
+		}
+
+	}
 
 
 }
