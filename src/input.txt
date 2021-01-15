@@ -1,6 +1,6 @@
-Barbara
-Francis
-Jack
+Barbara 2 3.0
+Francis 4 3.0
+Jack    4 9.0
 Maria
 James
 Peters
