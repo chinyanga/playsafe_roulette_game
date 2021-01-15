@@ -5,8 +5,13 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.playsafe.roulette.models.Player;
+import com.playsafe.roulette.validators.InputValidators;
 
 public class RouletteGame {
 	
@@ -17,10 +22,25 @@ public class RouletteGame {
 	static boolean playerExist = false;
 	static int controlCounter = 0;
 	
-	public static void main(String[] args) {
-		
-		readPlayersFromFile();
-		programIntro();
+	public static void main(String[] args) {		
+		try {
+			Runnable runnable = new Runnable() {
+				@Override
+				public void run() {
+					generateRandomNum();
+					gameController();
+				}
+			};
+			ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+			service.scheduleAtFixedRate(runnable, 0, 90, TimeUnit.SECONDS);
+
+			readPlayersFromFile();
+			programIntro();
+			while (isGameOn)
+				enterPlayerInput();
+		} catch (Exception e) {
+
+		}
 
 	}
 	
@@ -84,6 +104,61 @@ public class RouletteGame {
 
 		}
 
+	}
+	
+	
+	public static void enterPlayerInput() {
+		playerExist = false;
+		System.out.println("-----Choose existing player and enter bet details below-----\n");
+		Scanner playerBet = new Scanner(System.in);
+		String betStr = playerBet.nextLine();
+		String playerName = betStr.split(" ")[0];
+		for (Player p : playerList) {
+			if (p.getName().equalsIgnoreCase(playerName)) {
+				playerExist = true;
+				break;
+			}
+		}
+		if (playerExist == false) {
+			System.out.println("---------Entered player is not recognized-----------------");
+		} else {
+			if (betStr.split(" ").length == 3) {
+				double betCost = Double.valueOf(betStr.split(" ")[2]);
+				if (!InputValidators.isValidBetCost(betStr.split(" ")[2]))
+					System.out.println("======Invalid bet cost====");
+				else if (betStr.split(" ")[1].equalsIgnoreCase("EVEN")) {
+					if (programBetNumber % 2 == 0)
+						currentGamePlayers.add(
+								new Player(betStr.split(" ")[0], betStr.split(" ")[1], betCost, "WIN", 2 * betCost));
+					else
+						currentGamePlayers
+								.add(new Player(betStr.split(" ")[0], betStr.split(" ")[1], betCost, "LOSE", 0.00));
+				}
+
+				else if (betStr.split(" ")[1].equalsIgnoreCase("ODD")) {
+					if (programBetNumber % 2 != 0)
+						currentGamePlayers.add(
+								new Player(betStr.split(" ")[0], betStr.split(" ")[1], betCost, "WIN", 2 * betCost));
+					else
+						currentGamePlayers
+								.add(new Player(betStr.split(" ")[0], betStr.split(" ")[1], betCost, "LOSE", 0.00));
+				} else if (InputValidators.isValidNumber(betStr.split(" ")[1])) {
+					int betNumber = Integer.valueOf(betStr.split(" ")[1]);
+					if (betNumber >= 1 && betNumber <= 36)
+						currentGamePlayers.add(
+								new Player(betStr.split(" ")[0], betStr.split(" ")[1], betCost, "WIN", 36 * betCost));
+					else
+						currentGamePlayers
+								.add(new Player(betStr.split(" ")[0], betStr.split(" ")[1], betCost, "LOSE", 0.00));
+				} else
+					currentGamePlayers
+							.add(new Player(betStr.split(" ")[0], betStr.split(" ")[1], betCost, "LOSE", 0.00));
+
+			} else {
+				System.out.println("======Invalid input====");
+			}
+
+		}
 	}
 
 
